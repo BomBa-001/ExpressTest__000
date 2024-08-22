@@ -145,34 +145,78 @@
         DB_USER:BomBa
         DB_PASS:gAWKo6Ki2Yd9OnT6
         DB_CONN:mongodb+srv://BomBa:gAWKo6Ki2Yd9OnT6@cluster0.fcwcb.mongodb.net/
-      --- --- ---
-    - تنصيب mongoose للتعامل معا قاعدة البيانات
-      npm i mongoose
+    --- --- --- --- --- --- --- --- ---
+    00. الإتصال بقاعدت البيانات.
+    01. بناء الهيكل للجداول -schema-
+    02. بناء المديول المسأول عن العمليات داخل الهيكل مثل [الإضافة, التعديل, الحذف, جلب البيانا]  -model-
+    03. بناء الروابط المسئولة عن تنفيز أوامر المديول -api route-
 
-      import mongoose from "mongoose";
-      mongoose.connect(process.env.DB_CONN).then(conn=>{
-        console.log(`🔗 MongoDB Connected: ${conn.connection.host}`); 
-      }).catch(err=>{
-        console.error(`❌ Error connecting to MongoDB: ${err.message}`);
-        process.exit(1);  // exit process with error code 1 if connection fails.
-      });
+    // 0) import & connection DataBath:
+    import mongoose from "mongoose";
+    mongoose.connect(process.env.DB_CONN).then(conn=>{
+      console.log(`🔗 MongoDB Connected: ${conn.connection.host}`); 
+    }).catch(err=>{
+      console.error(`❌ Error connecting to MongoDB: ${err.message}`);
+      process.exit(1);  //exit process with error code 1 if connection fails.
+    });
+    // --- --- --- --- --- --- --- ---- ---
 
-    - إنشاء schema للتعامل مع collection مثل الإنشاء
-      * مع العلم ان:
-      * schema        --> تعادل المايجريشاً في php laravel
-      * collection    --> يعادل الجدول
+    // 1) create schema:
+    const userSchema = new mongoose.Schema({
+      name: { type: String,},
+    });
+    // const User = mongoose.model('User', userSchema);
+    // --- --- --- --- --- --- --- ---- ---
 
+    // 2) create model:
+    const userModel = mongoose.model('User', userSchema);
+    // --- --- --- --- --- --- --- ---- --- 
 
-
-    
-      [الإضافة, التعديل, الحذف, جلب البيانا] 
-
-        
-    ---------------------------------------------------------
-
+    // 3) create route:
+    app.post('/user',(req,res)=>{
+      const { name } = req.body;
+      console.log(name);
+      
+      const newUser = new userModel({ name });
+      newUser.save().then(data=>{
+        res.json(data);
+      }).catch(err=>{console.error(err); res.status(500).json({ message: "❌ Server Error!!" }); });
+    })
+  ---------------------------------------------------------
 */
 
 
 
 
 // [ ]
+
+
+
+
+
+
+/*
+00) تسبيت get:
+  sudo pacman -S git
+01) تكوين Git:
+  git config --global user.name "BomBa-001"
+  git config --global user.email "alipomp001@gmail.com"
+
+02) فتح مشروعك في VS Code:
+  - تهيئة مستودع Git:
+  git init
+  - أضف الملفات إلى الـ staging area:
+  git add .
+  - قم بإنشاء commit للتغييرات:
+  git commit -m "Initial commit"
+
+  -- ربط المستودع المحلي بالمستودع على GitHub
+  git remote add origin <repository-url>
+
+  - دفع الملفات إلى GitHub
+  git push -u origin master
+
+  * إذا كان لديك فرع رئيسي باسم main بدلاً من master، استخدم
+  git push -u origin main
+
+*/
