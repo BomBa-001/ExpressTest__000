@@ -1,8 +1,8 @@
 // 22/08/2024         --> تاريخ العمل علي المشروع
-// sudo pacman -S nvm &&	echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.zshrc && source ~/.zshrc && nvm install --lts && node -v && npm -v
+// sudo pacman -S nvm &&	echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.zshrc && source ~/.zshrc && nvm install --lts && nvm alias default node && npm install --global yarn && node -v && npm -v && yarn -v
 // node -v  == v20.17.0
 // ------{ ExpressTest__000 }------
-/*[0] إنشاء ملافات المشروع
+/*[x] إنشاء ملافات المشروع
   --- mkdir express-NAME-v1
     --- cd express-NAME-v1
     --- npm init --yes && npm pkg set type="module"
@@ -11,10 +11,11 @@
       express: لإنشاء السيرفر.
       dotenv: لإدارة المتغيرات البيئية.
       morgan: لتسجيل ومراقبة الطلبات HTTP. (عملية مراقبة في كونسل السيرفر Loging to request or respond to consol)
-
+      slugify: مكتبة مسؤلة عن تحويل الفراغات إلي رموز أو علامات أخري عند الإضافة في قاعدة البيانات.
+      express-async-handler: مكتبة لتنطيم الكود عند التكلم مع قاعدة البيانات بشكل افضل وخاصتاً كود الخطأ.
       nodemon: لإعادة تشغيل الخادم تلقائيًا عند إجراء تغييرات.
     
-    --- npm install express dotenv morgan
+    --- npm install express dotenv morgan slugify express-async-handler
     --- npm install nodemon -D
       لتتمكن من استخدام ES6 Modules في مشروعك، افتح ملف package.json وأضف السطر التالي:
       "type": "module",
@@ -43,7 +44,7 @@
     --- npm run dev
 */
 
-/*[0] إنشاء ملف HTML كصفحة رئيسية للمشروع:
+/*[x] إنشاء ملف HTML كصفحة رئيسية للمشروع:
   --- قم بإنشاء ملف HTML جديد باسم public/index.html أو أي اسم تفضله.
   --- mkdir public
   --- touch index.html
@@ -107,7 +108,7 @@
       </html>
 */
 
-/*[0] إنشاء ملف "config.env"
+/*[x] إنشاء ملف "config.env"
   --- touch config.env
       افتح config.env وأضف الكود التالي:
       PORT=5000
@@ -120,7 +121,7 @@
       DB_NAME=your_database_name
 */
 
-/*[0] إنشاء ملف ".gitignore"
+/*[x] إنشاء ملف ".gitignore"
   --- touch .gitignore
   افتح .gitignoreوأضف الكود التالي:
       node_modules/
@@ -128,7 +129,7 @@
       config.env
 */
 
-/*[0] إنشاء ملف قواعد البيانات وضبطتها:
+/*[x] إنشاء ملف قواعد البيانات وضبطتها:
   --- MongoDB:-------------------------------------------------
     - التسجيل في الموقع وإستخراج بيانات الإتصال:
       link:https://www.mongodb.com/
@@ -145,34 +146,111 @@
         DB_USER:BomBa
         DB_PASS:gAWKo6Ki2Yd9OnT6
         DB_CONN:mongodb+srv://BomBa:gAWKo6Ki2Yd9OnT6@cluster0.fcwcb.mongodb.net/
-      --- --- ---
-    - تنصيب mongoose للتعامل معا قاعدة البيانات
-      npm i mongoose
+    --- --- --- --- --- --- --- --- ---
+    00. الإتصال بقاعدت البيانات.
+    01. بناء الهيكل للجداول -schema-
+    02. بناء المديول المسأول عن العمليات داخل الهيكل مثل [الإضافة, التعديل, الحذف, جلب البيانا]  -model-
+    03. بناء الروابط المسئولة عن تنفيز أوامر المديول -api route-
 
-      import mongoose from "mongoose";
-      mongoose.connect(process.env.DB_CONN).then(conn=>{
-        console.log(`🔗 MongoDB Connected: ${conn.connection.host}`); 
-      }).catch(err=>{
-        console.error(`❌ Error connecting to MongoDB: ${err.message}`);
-        process.exit(1);  // exit process with error code 1 if connection fails.
-      });
+    // 0) import & connection DataBath:
+    import mongoose from "mongoose";
+    mongoose.connect(process.env.DB_CONN).then(conn=>{
+      console.log(`🔗 MongoDB Connected: ${conn.connection.host}`); 
+    }).catch(err=>{
+      console.error(`❌ Error connecting to MongoDB: ${err.message}`);
+      process.exit(1);  //exit process with error code 1 if connection fails.
+    });
+    // --- --- --- --- --- --- --- ---- ---
 
-    - إنشاء schema للتعامل مع collection مثل الإنشاء
-      * مع العلم ان:
-      * schema        --> تعادل المايجريشاً في php laravel
-      * collection    --> يعادل الجدول
+    // 1) create schema:
+    const userSchema = new mongoose.Schema({
+      name: { type: String,},
+    });
+    // const User = mongoose.model('User', userSchema);
+    // --- --- --- --- --- --- --- ---- ---
+
+    // 2) create model:
+    const userModel = mongoose.model('User', userSchema);
+    // --- --- --- --- --- --- --- ---- --- 
+
+    // 3) create route:
+    app.post('/user',(req,res)=>{
+      const { name } = req.body;
+      console.log(name);
+      
+      const newUser = new userModel({ name });
+      newUser.save().then(data=>{
+        res.json(data);
+      }).catch(err=>{console.error(err); res.status(500).json({ message: "❌ Server Error!!" }); });
+    })
+  ---------------------------------------------------------
+*/
+
+/*[x] تنظيم ملفات المشروع */
+
+/*[ ] العمل علي:31  */
+
+
+/*[ ]  */
 
 
 
-    
-      [الإضافة, التعديل, الحذف, جلب البيانا] 
 
-        
-    ---------------------------------------------------------
 
+/*
+انا استعمل نظام "linux manjaro xfce"
+
+
+section__001
+- تنظيم الملفات,
 */
 
 
+/**
+ * الطريقة المفضلة لعمل الدوال
+ * يضيف رقمين معًا.
+ *
+ * @param {number} a - الرقم الأول.
+ * @param {number} b - الرقم الثاني.
+ * @returns {number} - حاصل جمع الرقمين.
+ */
+// function add(a, b) {
+//   return a + b;
+// }
 
 
-// [ ]
+
+// class name {
+//   constructor(parameters) {
+    
+//   }
+// }
+
+
+
+
+/*
+00) تسبيت get:
+  sudo pacman -S git
+01) تكوين Git:
+  git config --global user.name "BomBa-001"
+  git config --global user.email "alipomp001@gmail.com"
+
+02) فتح مشروعك في VS Code:
+  - تهيئة مستودع Git:
+  git init
+  - أضف الملفات إلى الـ staging area:
+  git add .
+  - قم بإنشاء commit للتغييرات:
+  git commit -m "Initial commit"
+
+  -- ربط المستودع المحلي بالمستودع على GitHub
+  git remote add origin <repository-url>
+
+  - دفع الملفات إلى GitHub
+  git push -u origin master
+
+  * إذا كان لديك فرع رئيسي باسم main بدلاً من master، استخدم
+  git push -u origin main
+
+*/

@@ -23,46 +23,23 @@ app.use(express.static('public'));  /**Serve static files from the "public" dire
 
 
 //#region / { DB - mongoose }  ====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	==
-
-// 0) import & connection DataBath:
-import mongoose from "mongoose";
-mongoose.connect(process.env.DB_CONN).then(conn=>{
-  console.log(`🔗 MongoDB Connected: ${conn.connection.host}`); 
-}).catch(err=>{
-  console.error(`❌ Error connecting to MongoDB: ${err.message}`);
-  process.exit(1);  /**exit process with error code 1 if connection fails. */
-});
-// --- --- --- --- --- --- --- ---- ---
-// 1) create schema:
-const userSchema = new mongoose.Schema({
-  name: { type: String,},
-});
-// const User = mongoose.model('User', userSchema);
-// --- --- --- --- --- --- --- ---- ---
-// 2) create model:
-const userModel = mongoose.model('User', userSchema);
-
-// --- --- --- --- --- --- --- ---- --- 
-// 3) create route:
-app.post('/user',(req,res)=>{
-  const { name } = req.body;
-  console.log(name);
-  
-  const newUser = new userModel({ name });
-  newUser.save().then(data=>{
-    res.json(data);
-  }).catch(err=>{console.error(err); res.status(500).json({ message: "❌ Server Error!!" }); });
-})
-
+import dbConnection from './database/config/database.js';
+dbConnection(process.env.DB_CONN);
 //#endregion /  ====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====
 
 
-//#region / { Routes }  ====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====
+//#region / { Mount Routes }  ====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====
 
 app.get("/", (req, res) => {
   // res.send("Hello World!");
   res.sendFile(path.resolve('public/index.html'));
 });
+
+// import userRoute from './database/routes/userRoute';
+import userRoute from './database/routes/userRoute.js';
+// const userRoute = require('./database/routes/userRoute');
+app.use('/api/v1/user', userRoute);
+
 
 //#endregion /  ====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====	====
 
@@ -82,3 +59,4 @@ app.listen(app_port, () => {
 
 // Server is running in production mode 🚀
 // ✔️ - ❌ - ⚠️ - 🚫 - 🛑 - 🔴 - 🔒 - 🏗️ - ⚙️ - 🛠️
+// console.error('DB - mongoose:','23-4.26');
